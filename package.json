@@ -1,0 +1,29 @@
+{
+  "name": "node-pebble",
+  "version": "0.0.0",
+  "description": "A module for interacting with your smart watch over serial.",
+  "main": "pebble.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mdobson/node-pebble.git"
+  },
+  "keywords": [
+    "pebble",
+    "watch",
+    "elroy",
+    "IoT"
+  ],
+  "author": "Matthew S. Dobson <@mdobs>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mdobson/node-pebble/issues"
+  },
+  "homepage": "https://github.com/mdobson/node-pebble",
+  "dependencies": {
+    "packet": "0.0.6",
+    "serialport": "^1.3.1"
+  }
+}
