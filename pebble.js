@@ -15,8 +15,7 @@ var Pebble = module.exports = function(serialPort) {
   this.serial.on('data', this.emit.bind(this, 'data'));
   this.serial.on('open', this.emit.bind(this, 'open'));
   this.serial.on('close', this.emit.bind(this, 'close'));
-
-
+  
   this.endpoints = {
     'TIME': 11,
     'VERSION': 16,
@@ -60,15 +59,10 @@ Pebble.prototype._buildMessage = function(endpoint, buffer) {
   return pack;
 };
 
-Pebble.prototype._receiveMessage = function() {
-
-};
-
 Pebble.prototype._createPacket = function(data, firstByte) {
   var packetLength = 1;
   var totalLength = data.reduce(function(prev, next) { return prev + (next.length + 1) } , packetLength);
 
-  
   var buffer = new Buffer(totalLength);
 
   if(firstByte) {
@@ -94,14 +88,21 @@ Pebble.prototype.sms = function(sender, body, cb) {
   var timeStamp = Date.now().toString();
   var parts = [sender, body, timeStamp];
   var data = this._createPacket(parts, 0x01);
-  this._sendMessage("NOTIFICATION", data, cb);
+  this._sendMessage('NOTIFICATION', data, cb);
 };
 
 Pebble.prototype.email = function(sender, subject, body, cb) {
   var timeStamp = Date.now().toString();
   var parts = [ sender, subject, timeStamp, body ];
   var data = this._createPacket(parts);
-  this._sendMessage("NOTIFICATION", data, cb);
+  this._sendMessage('NOTIFICATION', data, cb);
 };
 
+Pebble.prototype.getVersions = function(cb) {
+  this._sendMessage('VERSION', new Buffer([0x00]), cb);
+};
+
+Pebble.prototype.getTime = function(cb) {
+  this._sendMessage('TIME', new Buffer([0x00]), cb);
+};
 
