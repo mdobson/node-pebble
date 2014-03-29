@@ -15,6 +15,18 @@ var Pebble = module.exports = function(serialPort) {
   this.serial.on('data', this.emit.bind(this, 'data'));
   this.serial.on('open', this.emit.bind(this, 'open'));
   this.serial.on('close', this.emit.bind(this, 'close'));
+
+  this.serial.on('data', function(d){
+    var size = d.readUInt16BE(0);
+    var endpoint = d.readUInt16BE(2);
+    for( var key in self.endpoints) {
+      if(self.endpoints[key] === endpoint) {
+        var data = d.slice(4, 4+size);
+        self.emit('event', key.toLowerCase(), size, data);
+        self.emit(key.toLowerCase(), size, data);
+      }
+    }
+  });
   
   this.endpoints = {
     'TIME': 11,

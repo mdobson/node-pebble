@@ -25,7 +25,8 @@ p.on('open', function() {
   });*/
 
   p.getTime(function(){
-    p.on('data', function(d) {
+    // Time Parsing
+    /*p.on('data', function(d) {
       var size = d.readUInt16BE(0);
       var endpoint = d.readUInt16BE(2);
       if(endpoint === 11) {
@@ -34,7 +35,13 @@ p.on('open', function() {
         var date = new Date(data.readUInt32BE(1));
         
       }
-    });
+    });*/
+  });
+
+  p.getVersions(function(){});
+
+  p.on('event', function() {
+    console.log(arguments);
   });
 });
 
