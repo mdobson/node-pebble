@@ -10,7 +10,7 @@ p.on('open', function() {
   console.log('connection to pebble opened.');
   
   //Receive data events from the watch.
-  p.on('event', function(e, size, data) {
+  /*p.on('event', function(e, size, data) {
     if(e === 'logs') {
       var time = data.readUInt32BE(0);
       var level = parseInt(data[5], 16);
@@ -22,15 +22,15 @@ p.on('open', function() {
         console.log(item);
       });
     }
-  });
+  });*/
 
   //Send an email notification via bluetooth.
-  p.email('libpebble', 'Hello, Pebble!', 'I love you.', function(){
+  /*p.email('libpebble', 'Hello, Pebble!', 'I love you.', function(){
     console.log('Wrote data to the pebble!');
-  });
+  });*/
 
   //Get the current phone timestamp
-  p.getTime(function(){
+  /*p.getTime(function(){
     //Time Parsing
     p.on('time', function(size, d) {
       var size = d.readUInt16BE(0);
@@ -41,9 +41,9 @@ p.on('open', function() {
         console.log('Ts:', date);
       }
     });
-  });
+  });*/
 
-  p.getVersions(function(){});
+  /*p.getVersions(function(){});*/
 
   
 });
