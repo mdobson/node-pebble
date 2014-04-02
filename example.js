@@ -41,7 +41,9 @@ p.on('open', function() {
       console.log('Ack');
       console.log(arguments);
     });
-    p._createIntTuplePacket(1, 42);
+    console.log('Tuple (KEY): ', data.slice(19,22));
+    console.log('Tuple (TYPE): ', data[23]);
+ 
     //console.log(data.toString('hex'));
     //console.log(full);
     //p._createIntTuplePacket(1, 42);

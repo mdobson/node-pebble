@@ -1,6 +1,6 @@
 {
   "name": "node-pebble",
-  "version": "0.0.1",
+  "version": "0.0.2-dev",
   "description": "A module for interacting with your smart watch over serial.",
   "main": "pebble.js",
   "scripts": {
