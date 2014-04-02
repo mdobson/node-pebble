@@ -34,15 +34,11 @@ p.on('open', function() {
   /*p._createIntTuplePacket(1, 42, function(){
     console.log(arguments);
   });*/
-  p.once('application_message', function(size, data, full) {
+  p.on('application_message', function(size, data, full) {
     var tid = data[1];
     p.ack(tid, function() {
-      console.log('Ack');
-      console.log(arguments);
     });
-    console.log('Tuple (KEY): ', data.slice(19,22));
-    console.log('Tuple (TYPE): ', data[23]);
- 
+    console.log('Tuple (DATA): ', data.readInt32LE(26));
     //console.log(data.toString('hex'));
     //console.log(full);
     //p._createIntTuplePacket(1, 42);
