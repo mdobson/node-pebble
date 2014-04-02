@@ -2,10 +2,16 @@ var SerialPort = require('serialport');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var packet = require('packet');
+var uuid = require('node-uuid');
 
-var Pebble = module.exports = function(serialPort) {
+var Pebble = module.exports = function(opts) {
   EventEmitter.call(this);
-  this.serialPort = serialPort;
+  opts = opts || {};
+
+  this.serialPort = opts.serialPort;
+  this.appUuid = opts.appUuid;
+  this.appUuidBytes = new Buffer(uuid.parse(this.appUuid));
+  console.log(this.appUuidBytes);
   this.serial = new SerialPort.SerialPort(this.serialPort, {
     baudrate: 19200
   });
@@ -19,11 +25,13 @@ var Pebble = module.exports = function(serialPort) {
   this.serial.on('data', function(d){
     var size = d.readUInt16BE(0);
     var endpoint = d.readUInt16BE(2);
+    var data = d.slice(4, 4+size);
+
     for( var key in self.endpoints) {
       if(self.endpoints[key] === endpoint) {
         var data = d.slice(4, 4+size);
-        self.emit('event', key.toLowerCase(), size, data);
-        self.emit(key.toLowerCase(), size, data);
+        self.emit('event', endpoint, key.toLowerCase(), size, data, d);
+        self.emit(key.toLowerCase(), size, data, d);
       }
     }
   });
@@ -43,7 +51,22 @@ var Pebble = module.exports = function(serialPort) {
     'NOTIFICATION': 3000,
     'RESOURCE': 4000,
     'APP_MANAGER': 6000,
-    'PUTBYTES': 48879
+    'PUTBYTES': 48879,
+    'APPLICATION_MESSAGE':48
+  };
+
+  this.tupleTypes = {
+    'BYTE_ARRAY': 0x00,
+    'CSTRING': 0x01,
+    'UINT': 0x02,
+    'INT': 0x03
+  };
+
+  this.messageTypes = {
+    'PUSH': 0x01,
+    'REQUEST': 0x02,
+    'ACK': 0xFF,
+    'NACK': 0x7F
   };
 };
 util.inherits(Pebble, EventEmitter);
@@ -51,6 +74,7 @@ util.inherits(Pebble, EventEmitter);
 //Send message down serial port
 Pebble.prototype._sendMessage = function(endpoint, data, cb) {
   var msg = this._buildMessage(this.endpoints[endpoint], data);
+  console.log(msg);
   this.serial.write(msg, cb);
 };
 
@@ -117,4 +141,45 @@ Pebble.prototype.getVersions = function(cb) {
 Pebble.prototype.getTime = function(cb) {
   this._sendMessage('TIME', new Buffer([0x00]), cb);
 };
+
+Pebble.prototype.ack = function(tid, cb) {
+  var ackCommandBuf = new Buffer(2);
+  ackCommandBuf[0] = 0xFF;
+  ackCommandBuf.writeUInt8(tid, 1);
+  this._sendMessage('APPLICATION_MESSAGE', ackCommandBuf, cb);
+};
+
+Pebble.prototype._createStringTuplePacket = function(command, key, string, cb) {
+  //var buf = new Buffer(24 + string.length + 1);
+  var cmd = new Buffer([this.messageTypes['PUSH']]);
+  var tid = new Buffer([0x01]);
+  var key = new Buffer([0x00, 0x00, 0x00, 0x00]);
+  var type = new Buffer([0x01]);
+  var size = new Buffer(1).writeUInt8(string.length,0);
+  var data = new Buffer(string + '\0');
+  var buf = Buffer.concat([cmd, tid, key, type, size, data]);
+};
+
+Pebble.prototype._createIntTuplePacket = function(key, val, cb) {
+  //var buf = new Buffer(24 + string.length + 1);
+  var cmd = new Buffer([this.messageTypes['PUSH']]);
+  var tid = new Buffer([0x01]);
+  var keyBuf = new Buffer(4);
+  keyBuf.writeInt32LE(key,0);
+  var type = new Buffer([0x03]);
+  var tupleAmt = new Buffer([0x01]);
+  var size = new Buffer(2)
+  size.writeUInt16LE(4,0);
+  var data = new Buffer(4)
+  data.writeInt32LE(val, 0);
+  var buf = Buffer.concat([cmd, tid, this.appUuidBytes, tupleAmt, keyBuf, type, size, data]);
+  this._sendMessage('APPLICATION_MESSAGE', buf, cb);
+};
+
+
+
+Pebble.prototype.sendIntTuple = function(key, int, cb) {
+
+};
+
 

@@ -25,6 +25,7 @@
   "dependencies": {
     "packet": "0.0.6",
     "serialport": "^1.3.1",
-    "moment": "^2.5.1"
+    "moment": "^2.5.1",
+    "node-uuid": "^1.4.1"
   }
 }

@@ -2,7 +2,14 @@ var packet = require('packet');
 var SerialPort = require('serialport');
 var serializer = packet.createSerializer();
 
-var sender = 'libpebble';
+serializer.serialize('l8z|str(\'ascii\')', 'blah\0');
+var buf = new Buffer(5);
+var cmp = new Buffer('blah\0');
+serializer.write(buf);
+console.log(buf.toString('utf-8'));
+console.log(cmp.toString('utf-8'));
+
+/*var sender = 'libpebble';
 var subject = 'Hello, Pebble!';
 var body = 'I hate you.';
 var ts = Date.now().toString();
@@ -55,4 +62,4 @@ function createPacket(data) {
   buffer.copy(pack,4);
   return pack;
 }
-
+*/
