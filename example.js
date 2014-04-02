@@ -35,7 +35,6 @@ p.on('open', function() {
     console.log(arguments);
   });*/
   p.once('application_message', function(size, data, full) {
-    console.log(full);
     var tid = data[1];
     p.ack(tid, function() {
       console.log('Ack');

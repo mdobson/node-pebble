@@ -11,7 +11,6 @@ var Pebble = module.exports = function(opts) {
   this.serialPort = opts.serialPort;
   this.appUuid = opts.appUuid;
   this.appUuidBytes = new Buffer(uuid.parse(this.appUuid));
-  console.log(this.appUuidBytes);
   this.serial = new SerialPort.SerialPort(this.serialPort, {
     baudrate: 19200
   });
@@ -74,7 +73,6 @@ util.inherits(Pebble, EventEmitter);
 //Send message down serial port
 Pebble.prototype._sendMessage = function(endpoint, data, cb) {
   var msg = this._buildMessage(this.endpoints[endpoint], data);
-  console.log(msg);
   this.serial.write(msg, cb);
 };
 
